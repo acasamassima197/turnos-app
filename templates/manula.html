@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Guía técnica: Actualizar Turnos App</title>
+</head>
+<body>
+  <h1>Guía técnica: Actualizar Turnos App en GitHub + Render</h1>
+
+  <h2>1. Flujo de trabajo con Git</h2>
+  <ul>
+    <li>Editar tu código en Visual Studio Code (ejemplo: <code>app.py</code>, <code>templates/*.html</code>).</li>
+    <li>Guardar los cambios.</li>
+    <li>Ejecutar en la terminal:
+      <pre>
+git add .
+git commit -m "Descripción del cambio"
+git push
+      </pre>
+    </li>
+    <li>Esto sube el cambio a GitHub en la rama <code>main</code>.</li>
+  </ul>
+
+  <h2>2. Conexión GitHub ↔ Render</h2>
+  <ul>
+    <li>Render está vinculado a tu repo <code>acasamassima197/turnos-app</code>.</li>
+    <li>Cuando hacés <code>git push</code>, Render recibe la notificación automáticamente.</li>
+    <li>Render clona el repo, instala dependencias (<code>pip install -r requirements.txt</code>) y arranca con <code>gunicorn app:app</code>.</li>
+    <li>Si tu <code>app.py</code> incluye <code>init_db()</code>, se crea la tabla <code>turnos</code> al inicio.</li>
+  </ul>
+
+  <h2>3. Qué pasa en Render</h2>
+  <ul>
+    <li>El servicio entra en estado <strong>building</strong> → <strong>deploying</strong> → <strong>live</strong>.</li>
+    <li>La URL pública (ejemplo: <code>https://turnos-app1.onrender.com</code>) refleja los cambios.</li>
+    <li>En plan gratuito, la instancia se “duerme” si no hay actividad, y puede tardar ~50 segundos en despertar.</li>
+  </ul>
+
+  <h2>4. Pasos para verificar cambios</h2>
+  <ol>
+    <li>Hacer un cambio mínimo (ejemplo: texto en <code>index.html</code>).</li>
+    <li>Commit y push.</li>
+    <li>Esperar unos segundos: Render redeploya solo.</li>
+    <li>Entrar a la URL pública y comprobar el cambio.</li>
+  </ol>
+
+  <h2>5. Consideraciones sobre la base de datos</h2>
+  <ul>
+    <li>Actualmente usás SQLite (<code>turnos.db</code>), que se borra en cada redeploy.</li>
+    <li>Para persistencia real, deberías crear un servicio de PostgreSQL en Render y conectar Flask a esa base.</li>
+  </ul>
+
+  <h2>6. Resumen rápido</h2>
+  <p>
+    <strong>Editar → Commit → Push → Render redeploya → URL pública actualizada.</strong><br>
+    No hace falta tocar nada en Render salvo la primera configuración.
+  </p>
+</body>
+</html>
