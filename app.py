@@ -1,6 +1,5 @@
 from flask import Flask, request, render_template
 import sqlite3
-import os
 
 app = Flask(__name__)
 
@@ -12,9 +11,8 @@ def init_db():
         conn.executescript(f.read())
     conn.close()
 
-# Crear la base si no existe
-if not os.path.exists(DB_FILE):
-    init_db()
+# Siempre inicializar la base al arrancar
+init_db()
 
 def get_db():
     conn = sqlite3.connect(DB_FILE)
