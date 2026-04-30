@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agenda de Turnos</title>
+</head>
+<body>
+    <h1>Turnos</h1>
+    <ul>
+        {% for turno in turnos %}
+            <li>{{ turno["nombre"] }} - {{ turno["fecha"] }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Agendar nuevo turno</h2>
+    <form action="/agendar" method="post">
+        Nombre: <input type="text" name="nombre"><br>
+        Fecha: <input type="text" name="fecha"><br>
+        <button type="submit">Agendar</button>
+    </form>
+</body>
+</html>
