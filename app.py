@@ -1,24 +1,10 @@
-from flask import Flask, request, render_template
 import sqlite3
 
-app = Flask(__name__)
-
-def get_db():
+def init_db():
     conn = sqlite3.connect("turnos.db")
-    conn.row_factory = sqlite3.Row
-    return conn
+    with open("schema.sql", "r") as f:
+        conn.executescript(f.read())
+    conn.close()
 
-@app.route("/")
-def index():
-    conn = get_db()
-    turnos = conn.execute("SELECT * FROM turnos").fetchall()
-    return render_template("index.html", turnos=turnos)
-
-@app.route("/agendar", methods=["POST"])
-def agendar():
-    nombre = request.form["nombre"]
-    fecha = request.form["fecha"]
-    conn = get_db()
-    conn.execute("INSERT INTO turnos (nombre, fecha) VALUES (?, ?)", (nombre, fecha))
-    conn.commit()
-    return "Turno agendado correctamente"
+# Llamar a init_db() al inicio
+init_db()
