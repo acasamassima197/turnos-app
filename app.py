@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
 import sqlite3
 
 app = Flask(__name__)
@@ -20,11 +20,23 @@ def get_db():
     return conn
 
 @app.route("/")
-def index():
-    conn = get_db()
-    turnos = conn.execute("SELECT * FROM turnos").fetchall()
-    return render_template("index.html", turnos=turnos)
+def root():
+    # Al entrar a la URL pública, primero login
+    return redirect(url_for("login"))
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        usuario = request.form["usuario"]
+        password = request.form["password"]
+        if usuario == "admin" and password == "admin":
+            conn = get_db()
+            turnos = conn.execute("SELECT * FROM turnos").fetchall()
+            return render_template("index.html", turnos=turnos)
+        else:
+            return render_template("login.html", error="Credenciales inválidas")
+    return render_template("login.html")
+    
 @app.route("/agendar", methods=["POST"])
 def agendar():
     nombre = request.form["nombre"]
@@ -32,14 +44,5 @@ def agendar():
     conn = get_db()
     conn.execute("INSERT INTO turnos (nombre, fecha) VALUES (?, ?)", (nombre, fecha))
     conn.commit()
-    return "Turno agendado correctamente"
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        usuario = request.form["usuario"]
-        password = request.form["password"]
-        if usuario == "admin" and password == "admin":
-            return render_template("index.html", turnos=get_db().execute("SELECT * FROM turnos").fetchall())
-        else:
-            return "Credenciales inválidas"
-    return render_template("login.html")
+    conn.close()
+    return redirect(url_for("login"))
