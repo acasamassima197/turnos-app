@@ -33,3 +33,13 @@ def agendar():
     conn.execute("INSERT INTO turnos (nombre, fecha) VALUES (?, ?)", (nombre, fecha))
     conn.commit()
     return "Turno agendado correctamente"
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        usuario = request.form["usuario"]
+        password = request.form["password"]
+        if usuario == "admin" and password == "admin":
+            return render_template("index.html", turnos=get_db().execute("SELECT * FROM turnos").fetchall())
+        else:
+            return "Credenciales inválidas"
+    return render_template("login.html")
